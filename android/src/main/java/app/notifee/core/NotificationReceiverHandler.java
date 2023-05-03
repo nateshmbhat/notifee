@@ -33,6 +33,7 @@ import app.notifee.core.event.NotificationEvent;
 import app.notifee.core.model.NotificationAndroidPressActionModel;
 import app.notifee.core.model.NotificationModel;
 
+// For Android 12 +
 public class NotificationReceiverHandler {
   public static final String REMOTE_INPUT_RECEIVER_KEY =
       "app.notifee.core.ReceiverService.REMOTE_INPUT_RECEIVER_KEY";
@@ -91,8 +92,14 @@ public class NotificationReceiverHandler {
       }
     }
 
-    NotificationManagerCompat.from(context)
+    if (notificationModel.getAndroid().getAutoCancel()) {
+      NotificationManagerCompat.from(context)
         .cancel(intent.getIntExtra(NOTIFICATION_ID_INTENT_KEY, 0));
+    }
+
+    InitialNotificationEvent initialNotificationEvent =
+        new InitialNotificationEvent(notificationModel, extras);
+    EventBus.postSticky(initialNotificationEvent);
 
     // Send event
     EventBus.post(new NotificationEvent(TYPE_ACTION_PRESS, notificationModel, extras));

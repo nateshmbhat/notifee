@@ -46,12 +46,12 @@ export interface Notification {
   body?: string | undefined;
 
   /**
-   * Additional data to store on the notification. Only `string` values can be stored.
+   * Additional data to store on the notification.
    *
    * Data can be used to provide additional context to your notification which can be retrieved
    * at a later point in time (e.g. via an event).
    */
-  data?: { [key: string]: string };
+  data?: { [key: string]: string | object | number };
 
   /**
    * Android specific notification options. See the [`NotificationAndroid`](/react-native/reference/notificationandroid)
@@ -74,7 +74,12 @@ export interface Notification {
    *
    * @platform ios
    */
-  readonly remote?: boolean;
+  readonly remote?: {
+    messageId: string;
+    senderId: string;
+    mutableContent?: number;
+    contentAvailable?: number;
+  };
 }
 
 /**
@@ -246,7 +251,7 @@ export interface NotificationPressAction {
  * On Android; when provided to a notification action, the action will only open you application if
  * a `launchActivity` and/or a `mainComponent` is provided.
  *
- * Please see the [FullScreen Action](/react-native/docs/android/behaviour#full-screen-action) document to learn more.
+ * Please see the [FullScreen Action](/react-native/docs/android/behaviour#full-screen) document to learn more.
  */
 export interface NotificationFullScreenAction {
   /**
@@ -263,7 +268,7 @@ export interface NotificationFullScreenAction {
    * This property can be used in advanced scenarios to launch a custom Android Activity when the user
    * performs a full-screen action.
    *
-   * View the [Android Full Screen](/react-native/docs/android/behviour#full-screen-action) docs to learn more.
+   * View the [Android Full Screen](/react-native/docs/android/behaviour#full-screen) docs to learn more.
    *
    * @platform android
    */
@@ -284,7 +289,7 @@ export interface NotificationFullScreenAction {
    * This property can be used to open a custom React component when the notification is displayed.
    * For this to correctly function on Android, a minor native code change is required.
    *
-   * View the [Full-screen Action](/react-native/docs/android/behviour#full-screen-action) document to learn more.
+   * View the [Full-screen Action](/react-native/docs/android/behaviour#full-screen) document to learn more.
    *
    * @platform android
    */
@@ -308,11 +313,11 @@ export enum EventType {
 
   /**
    * Event type is sent when the user dismisses a notification. This is triggered via the user swiping
-   * the notification from the notification shade or performing "Clear all" notifications.
+   * the notification from the notification shade.
+   *
+   * On Android, the event is also sent when performing "Clear all" notifications unlike on iOS.
    *
    * This event is **not** sent when a notification is cancelled or times out.
-   *
-   * @platform android Android
    */
   DISMISSED = 0,
 
@@ -365,6 +370,13 @@ export enum EventType {
    * Event type is sent when a notification trigger is created.
    */
   TRIGGER_NOTIFICATION_CREATED = 7,
+
+  /**
+   * **ANDROID ONLY**
+   *
+   * Event type is sent when a notification wants to start a foreground service but a foreground service is already started.
+   */
+  FG_ALREADY_EXIST = 8,
 }
 
 /**
@@ -383,6 +395,7 @@ export interface EventDetail {
    *  - [`EventType.ACTION_PRESS`](/react-native/reference/eventtype#action_press)
    *  - [`EventType.DELIVERED`](/react-native/reference/eventtype#delivered)
    *  - [`EventType.TRIGGER_NOTIFICATION_CREATED`](/react-native/reference/eventtype#trigger_notification_created)
+   *  - [`EventType.FG_ALREADY_EXIST`](/react-native/reference/eventtype#fg_already_exist)
    */
   notification?: Notification;
 

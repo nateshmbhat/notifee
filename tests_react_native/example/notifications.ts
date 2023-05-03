@@ -4,8 +4,9 @@ import {
   AndroidLaunchActivityFlag,
   AndroidCategory,
   AndroidImportance,
+  AndroidFlags,
+  AndroidColor,
 } from '@notifee/react-native';
-import { AndroidFlags } from '@notifee/react-native/src';
 
 export const notifications: { key: string; notification: Notification | Notification[] }[] = [
   {
@@ -49,8 +50,33 @@ export const notifications: { key: string; notification: Notification | Notifica
         pressAction: {
           id: 'default',
         },
+        lights: [AndroidColor.PURPLE, 300, 600],
       },
       ios: {},
+    },
+  },
+  {
+    key: 'Communications',
+    notification: {
+      id: 'communication-id',
+      title: 'Communication PN',
+      android: {
+        channelId: 'high',
+        pressAction: {
+          id: 'default',
+        },
+      },
+      ios: {
+        categoryId: 'communicationId',
+        communicationInfo: {
+          conversationId: '123',
+          sender: {
+            id: 'abcde',
+            avatar: 'https://pbs.twimg.com/profile_images/1070077650713133056/oji2RT4i_normal.jpg',
+            displayName: 'Helena Ford',
+          },
+        },
+      },
     },
   },
   {
@@ -133,7 +159,50 @@ export const notifications: { key: string; notification: Notification | Notifica
       },
     },
   },
-
+  {
+    key: 'Ongoing with Press',
+    notification: {
+      id: 'ongoing',
+      title: 'Ongoing with Press',
+      body: '---',
+      ios: {
+        categoryId: 'actions',
+      },
+      android: {
+        pressAction: { id: 'default', launchActivity: 'default' },
+        actions: [
+          {
+            pressAction: { id: 'an-action-id' },
+            title: 'An Action',
+          },
+        ],
+        // autoCancel: false,
+        ongoing: true,
+      },
+    },
+  },
+  {
+    key: 'With Flag NO CLEAR',
+    notification: {
+      id: 'noclear',
+      title: 'NO CLEAR',
+      body: '---',
+      ios: {
+        categoryId: 'actions',
+      },
+      android: {
+        pressAction: { id: 'default', launchActivity: 'default' },
+        actions: [
+          {
+            pressAction: { id: 'an-action-id' },
+            title: 'An Action',
+          },
+        ],
+        // autoCancel: false,
+        flags: [AndroidFlags.FLAG_NO_CLEAR],
+      },
+    },
+  },
   {
     key: 'Actions (event only)',
     notification: {
@@ -216,6 +285,35 @@ export const notifications: { key: string; notification: Notification | Notifica
     },
   },
   {
+    key: 'Progress indeterminate',
+    notification: {
+      title: 'Background Task',
+      body: 'Doing some work...',
+      android: {
+        autoCancel: true,
+        color: '#9c27b0',
+        onlyAlertOnce: true,
+        asForegroundService: true,
+        progress: {
+          indeterminate: true,
+        },
+        actions: [
+          {
+            title: 'Stop',
+            icon: 'https://invertase.io/icons/icon-48x48.png',
+            pressAction: {
+              id: 'stop',
+            },
+          },
+        ],
+        channelId: 'high',
+      },
+      ios: {
+        categoryId: 'stop',
+      },
+    },
+  },
+  {
     key: 'Big Picture Style',
     notification: {
       title: 'Big Picture Style',
@@ -277,7 +375,7 @@ export const notifications: { key: string; notification: Notification | Notifica
     },
   },
   {
-    key: 'Android Launch Activity Flags',
+    key: 'Android Launch Activity Flags default',
     notification: {
       title: 'Testing SINGLE_TOP launch.',
       body: 'Expand for a cat!',
@@ -292,6 +390,20 @@ export const notifications: { key: string; notification: Notification | Notifica
         style: {
           type: AndroidStyle.BIGPICTURE,
           picture: 'https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png',
+        },
+      },
+    },
+  },
+  {
+    key: 'Android Launch Activity Flags custom',
+    notification: {
+      title: 'Testing Custom launch.',
+      body: 'Expand for a cat!',
+      android: {
+        channelId: 'foo',
+        pressAction: {
+          id: 'default',
+          launchActivity: 'com.notifee.testing.FullScreenActivity',
         },
       },
     },

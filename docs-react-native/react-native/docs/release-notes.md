@@ -5,6 +5,57 @@ next: /react-native/docs/usage
 previous: /react-native/docs/installation
 ---
 
+## 7.7.1
+
+- **[iOS]**: Adds image caching for the avatar for Communication Notifications (PR [#742)](https://github.com/invertase/notifee/pull/742))).
+
+## 7.7.0
+
+- **[Android]**: Fixes an issue with foreground `PRESS` event being treated as a background event (Fixes [#621](https://github.com/invertase/notifee/issues/621)).
+- **[Android]**: Fixes an issue where the event details of a notification were incorrect and were from another notification (Fixes [#637](https://github.com/invertase/notifee/issues/637) and [#651](https://github.com/invertase/notifee/issues/651)).
+
+## 7.6.1
+
+- No changes, used to force `npm` registry to update for the previous version to appear.
+
+## 7.6.0
+
+- **[Android]**: Fixes an issue with interval triggers firing immediately (Fixes [#696](https://github.com/invertase/notifee/issues/696)).
+- **[Android]**: Fixes an issue with progress notification with `indeterminate` set to `true` (Fixes [#682](https://github.com/invertase/notifee/issues/682)).
+- **[Android]**: Android flag `Flag_NO_CLEAR` is now supported but can get the same behaviour with `ongoing` set to `true` (Fixes [#674](https://github.com/invertase/notifee/issues/674)).
+- **[Android/iOS]**: Fixes a ts error with latest React Native version 0.71+ (Fixes [#708](https://github.com/invertase/notifee/issues/708)).
+- **[Android]**: Fixes an issue where if `autoCancel` is set to `false`, for Android actions this was ignored for Android 12 and above (Fixes [#697](https://github.com/invertase/notifee/issues/697)).
+- **[Android]**: Remove unused android dependenecy `okhttp3` which was reported to have been causing a problem (Fixes [#699](https://github.com/invertase/notifee/issues/699)).
+
+## 7.5.0
+
+- **[Android]**: Updates the Android EventBus dependency to comply with the Google Play Store requirements (Fixes [#668](https://github.com/invertase/notifee/issues/668)).
+
+## 7.4.0
+
+- **[Android]**: Fixes an issue when setting a custom launchActivity to ensure the correct activity is launched when a notification is pressed when app is closed (Fixes [#646](https://github.com/invertase/notifee/issues/646)).
+- **[Android]**: Fixes an issue with Android `lights` when parsing colors as strings for trigger notifications (Fixes [#618](https://github.com/invertase/notifee/issues/618)).
+- **[Android]**: Fixes an issue with jest mock where some mocks were not returning the correct type (Fixes [#636](https://github.com/invertase/notifee/issues/636)).
+- **[Android]**: Adds a new `TYPE_FG_ALREADY_EXIST` event type for foreground services (PR [#634](https://github.com/invertase/notifee/pull/634)).
+- **[iOS]**: Removes a debug console.log statement that was commited to the main branch (PR [#617](https://github.com/invertase/notifee/pull/617)).
+
+## 7.3.0
+- **[Android]**: Fixes an issue for Android 11 and lower to ensure notification drawer is closed when a quick action is pressed. (Fixes [#614](https://github.com/invertase/notifee/issues/614)).
+- **[Android]**: Fixes an issue where the initial notification was not set if the app opened via a quick action (PR [#605](https://github.com/invertase/notifee/pull/605)).
+
+## 7.2.0
+- **[Android]**: Fixes an issue for Android 12 with quick actions when the app is in the background  (Fixes [#404](https://github.com/invertase/notifee/issues/404)).
+- **[Android]**: Prevents a NullPointerException to occur when a background service is triggered (Fixes [#592](https://github.com/invertase/notifee/issues/592)).
+
+## 7.1.0
+- **[iOS]**: Supports communication notifications on iOS (PR [#526](https://github.com/invertase/notifee/pull/526)).
+
+## 7.0.4
+- **[Android]**: Fixes an issue when calling requestPermissions for Android 12 or lower (Fixes [#555](https://github.com/invertase/notifee/issues/555)).
+
+## 7.0.3
+- **[Android]**: Fixes an issue that was introduced in v6.0.0 to support targetSdkVersion 33 (Fixes [#547](https://github.com/invertase/notifee/issues/547)).
+
 ## 7.0.1
 - **[Android]**: Fixes an issue that was introduced in v6.0.0 (Fixes [#528](https://github.com/invertase/notifee/issues/528)).
 

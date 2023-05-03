@@ -24,12 +24,13 @@ import android.os.Bundle;
 import app.notifee.core.event.MainComponentEvent;
 import app.notifee.core.model.NotificationAndroidPressActionModel;
 import app.notifee.core.utility.IntentUtils;
+
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotificationPendingIntent {
   public static final String EVENT_TYPE_INTENT_KEY = "notifee_event_type";
   public static final String NOTIFICATION_ID_INTENT_KEY = "notification_id";
-  private static final AtomicInteger uniqueIds = new AtomicInteger(0);
   private static final String TAG = "NotificationPendingIntent";
 
   /**
@@ -66,7 +67,7 @@ public class NotificationPendingIntent {
     setIntentExtras(receiverIntent, eventType, notificationId, extraKeys, extraBundles);
 
     // Create pending intent with activities
-    int uniqueInt = uniqueIds.getAndIncrement();
+    int uniqueInt = UUID.randomUUID().hashCode();
     Intent[] intents;
 
     if (launchActivityIntent != null) {
@@ -141,12 +142,22 @@ public class NotificationPendingIntent {
       Intent launchActivityIntent =
           context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
 
+      // Get launchActivity value from payload
       String launchActivity = null;
       if (pressActionModel != null) {
         launchActivity = pressActionModel.getLaunchActivity();
       }
 
-      if (launchActivityIntent == null && launchActivity != null) {
+      // Determine if existing launchActivityIntent should be overwritten
+      // to handle a custom launchActivity
+      Boolean shouldOverwriteDefaultLaunchActivityIntent = launchActivityIntent == null;
+      if (launchActivityIntent != null) {
+        // overwrite if custom launch activity set (launch activity in payload does not equal current activity)
+        shouldOverwriteDefaultLaunchActivityIntent = launchActivity != "default" && launchActivityIntent.getComponent().getClassName() != launchActivity;
+      }
+
+      // Set new launch activity intent
+      if (launchActivity != null && shouldOverwriteDefaultLaunchActivityIntent) {
         Class<?> launchActivityClass = IntentUtils.getLaunchActivity(launchActivity);
         launchActivityIntent = new Intent(context, launchActivityClass);
 
@@ -156,6 +167,7 @@ public class NotificationPendingIntent {
             Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
       }
 
+      // Set any additional flags or main component if specified
       if (pressActionModel.getLaunchActivityFlags() != -1) {
         launchActivityIntent.setFlags(pressActionModel.getLaunchActivityFlags());
       }

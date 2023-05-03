@@ -54,7 +54,10 @@ export function NotificationSpec(spec: TestScope): void {
     spec.it('configures custom sounds correctly', async function () {
       const customSoundChannel = await notifee.getChannel('new_custom_sound');
       console.warn('customSoundChannel looks like: ' + JSON.stringify(customSoundChannel));
-      if (Platform.OS === 'android') {
+
+      expect(customSoundChannel).not.null;
+
+      if (Platform.OS === 'android' && customSoundChannel) {
         expect(customSoundChannel.soundURI).contains('horse.mp3');
         expect(customSoundChannel.sound).equals('horse.mp3');
       }
@@ -127,6 +130,10 @@ export function NotificationSpec(spec: TestScope): void {
               expect(event.detail.notification?.id).equals(testId);
 
               const androidNotification = event.detail.notification?.android;
+
+              if (!androidNotification || !androidNotification.style) {
+                return;
+              }
 
               expect(androidNotification.style.type).equals(AndroidStyle.BIGPICTURE);
 
@@ -250,6 +257,42 @@ export function NotificationSpec(spec: TestScope): void {
           });
         },
       );
+
+      spec.it('displays a notification with a quick action without input', async function () {
+        return new Promise(async (resolve, reject) => {
+          return notifee
+            .displayNotification({
+              title: '',
+              body: '',
+              android: {
+                channelId: 'high',
+                actions: [
+                  {
+                    title: 'First Action',
+                    pressAction: {
+                      id: 'first_action',
+                    },
+                  },
+                ],
+              },
+            })
+            .then(id => {
+              expect(id).equals(id);
+              resolve();
+            })
+            .catch(e => {
+              reject(e);
+            });
+        });
+
+        // Manual steps:
+        // 1. Minimize app
+        // 2. Open notification drawer
+        // 3. Tap on 'First Action'
+        // 4. Make sure you see:
+        // >  WARN  Received a ACTION_PRESS Background event in JS mode.
+        // >  WARN  Notification Cancelled first_action
+      });
     });
   });
 

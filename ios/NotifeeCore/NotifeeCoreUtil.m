@@ -151,18 +151,8 @@
 + (UNNotificationAttachment *)attachmentFromDictionary:(NSDictionary *)attachmentDict {
   NSString *identifier = attachmentDict[@"id"];
   NSString *urlString = attachmentDict[@"url"];
-  NSURL *url;
 
-  if ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) {
-    // handle remote url by attempting to download attachement synchronously
-    url = [self downloadMediaSynchronously:urlString];
-  } else if ([urlString hasPrefix:@"/"]) {
-    // handle absolute file path
-    url = [NSURL fileURLWithPath:urlString];
-  } else {
-    // try to resolve local resource
-    url = [[NSBundle mainBundle] URLForResource:attachmentDict[@"url"] withExtension:nil];
-  }
+  NSURL *url = [self getURLFromString:urlString];
 
   if (url) {
     NSError *error;
@@ -187,6 +177,29 @@
 
   NSLog(@"NotifeeCore: Unable to resolve url for attachment: %@", attachmentDict);
   return nil;
+}
+
+/*
+ * get the URL from a string
+ *
+ * @param urlString NSString
+ * @return NSURL
+ */
++ (NSURL *)getURLFromString:(NSString *)urlString {
+  NSURL *url;
+
+  if ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) {
+    // handle remote url by attempting to download attachement synchronously
+    url = [self downloadMediaSynchronously:urlString];
+  } else if ([urlString hasPrefix:@"/"]) {
+    // handle absolute file path
+    url = [NSURL fileURLWithPath:urlString];
+  } else {
+    // try to resolve local resource
+    url = [[NSBundle mainBundle] URLForResource:urlString withExtension:nil];
+  }
+
+  return url;
 }
 
 /*
@@ -609,16 +622,16 @@
   for (id key in userInfo) {
     // build data dict from remaining keys but skip keys that shouldn't be included in data
     if ([key isEqualToString:@"aps"] || [key hasPrefix:@"gcm."] || [key hasPrefix:@"google."] ||
-       // notifee or notifee_options
-      [key hasPrefix:@"notifee"] ||
-       // fcm_options
-       [key hasPrefix:@"fcm"]) {
+        // notifee or notifee_options
+        [key hasPrefix:@"notifee"] ||
+        // fcm_options
+        [key hasPrefix:@"fcm"]) {
       continue;
-   }
+    }
     data[key] = userInfo[key];
- }
+  }
 
- return data;
+  return data;
 }
 
 + (NSMutableDictionary *)parseUNNotificationContent:(UNNotificationContent *)content {
@@ -704,6 +717,42 @@
   return dictionary;
 }
 
++ (INSendMessageIntent *)generateSenderIntentForCommunicationNotification:
+    (NSDictionary *)communicationInfo {
+  if (@available(iOS 15.0, *)) {
+    NSDictionary *sender = communicationInfo[@"sender"];
+    INPersonHandle *senderPersonHandle =
+        [[INPersonHandle alloc] initWithValue:sender[@"id"] type:INPersonHandleTypeUnknown];
+
+    // Parse sender's avatar
+    INImage *avatar = nil;
+    if (sender[@"avatar"] != nil) {
+      NSURL *url = [self getURLFromString:sender[@"avatar"]];
+      avatar = [INImage imageWithURL:url];
+    }
+
+    INPerson *senderPerson = [[INPerson alloc] initWithPersonHandle:senderPersonHandle
+                                                     nameComponents:nil
+                                                        displayName:sender[@"displayName"]
+                                                              image:avatar
+                                                  contactIdentifier:nil
+                                                   customIdentifier:nil];
+
+    INSendMessageIntent *intent =
+        [[INSendMessageIntent alloc] initWithRecipients:nil
+                                    outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText
+                                                content:communicationInfo[@"body"]
+                                     speakableGroupName:nil
+                                 conversationIdentifier:communicationInfo[@"conversationId"]
+                                            serviceName:nil
+                                                 sender:senderPerson
+                                            attachments:nil];
+
+    return intent;
+  }
+
+  return nil;
+}
 /**
  * Returns a random string using UUID
  *

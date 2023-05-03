@@ -104,17 +104,16 @@ repositories {
 dependencies {
 
   api 'androidx.annotation:annotation:1.3.0' // https://developer.android.com/jetpack/androidx/releases/annotation
-  api "com.squareup.okhttp3:okhttp:3.12.12" // okhttp must stay on 3.12.x to support minSdkVersion < 21
   api 'androidx.concurrent:concurrent-futures:1.1.0' // https://developer.android.com/jetpack/androidx/releases/concurrent
   api 'com.google.android.gms:play-services-tasks:18.0.1' // https://developers.google.com/android/guides/releases
-  api 'androidx.work:work-runtime:2.7.1' // https://developer.android.com/jetpack/androidx/releases/work
+  api 'androidx.work:work-runtime:2.8.0' // https://developer.android.com/jetpack/androidx/releases/work
   api 'com.facebook.fresco:fresco:2.6.0' // https://github.com/facebook/fresco/releases
 
-  def room_version = '2.4.3' // https://developer.android.com/jetpack/androidx/releases/room
+  def room_version = '2.5.0' // https://developer.android.com/jetpack/androidx/releases/room
   implementation "androidx.room:room-runtime:$room_version"
   annotationProcessor "androidx.room:room-compiler:$room_version"
 
-  def eventbus_version = '3.2.0' // https://github.com/greenrobot/EventBus/releases
+  def eventbus_version = '3.3.1' // https://github.com/greenrobot/EventBus/releases
   api "org.greenrobot:eventbus:$eventbus_version"
   annotationProcessor "org.greenrobot:eventbus-annotation-processor:$eventbus_version"
 

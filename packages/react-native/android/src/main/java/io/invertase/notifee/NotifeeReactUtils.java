@@ -14,6 +14,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import app.notifee.core.EventSubscriber;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -196,33 +199,8 @@ class NotifeeReactUtils {
   }
 
   static boolean isAppInForeground() {
-    Context context = EventSubscriber.getContext();
-
-    ActivityManager activityManager =
-        (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-    if (activityManager == null) return false;
-
-    List<ActivityManager.RunningAppProcessInfo> appProcesses =
-        activityManager.getRunningAppProcesses();
-    if (appProcesses == null) return false;
-
-    final String packageName = context.getPackageName();
-    for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-      if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-          && appProcess.processName.equals(packageName)) {
-        ReactContext reactContext;
-
-        try {
-          reactContext = (ReactContext) context;
-        } catch (ClassCastException exception) {
-          return true;
-        }
-
-        return reactContext.getLifecycleState() == LifecycleState.RESUMED;
-      }
-    }
-
-    return false;
+    Boolean isForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+    return isForeground;
   }
 
   static void hideNotificationDrawer() {
